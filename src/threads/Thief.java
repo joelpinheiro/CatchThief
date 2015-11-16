@@ -9,6 +9,6 @@ package threads;
  *
  * @author joelpinheiro
  */
-public class passerby {
+public class Thief {
     
 }

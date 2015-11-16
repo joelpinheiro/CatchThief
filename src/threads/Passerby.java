@@ -9,6 +9,6 @@ package threads;
  *
  * @author joelpinheiro
  */
-public class cop {
+public class Passerby extends Thread {
     
 }
