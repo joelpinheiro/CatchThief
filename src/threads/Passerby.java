@@ -5,10 +5,26 @@
  */
 package threads;
 
+import static catchthief.Maze.randomWalking;
+import java.awt.Point;
+import static java.lang.System.out;
+import java.util.Map;
+
 /**
  *
  * @author joelpinheiro
  */
 public class Passerby extends Thread {
+
+    private Point[] startPositions;
+    
+    public Passerby(Point[] startPositions) {
+        this.startPositions = startPositions;
+    }
+    
+    @Override
+    public void run() {
+        randomWalking(startPositions[0].y, startPositions[0].x);
+    }
     
 }
