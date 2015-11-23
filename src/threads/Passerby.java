@@ -5,8 +5,8 @@
  */
 package threads;
 
-import static catchthief.Maze.randomWalking;
-import static catchthief.Maze.searchPath;
+import static catchthief.CityMap.randomWalking;
+import static catchthief.CityMap.searchPath;
 import java.awt.Color;
 import java.awt.Point;
 import static java.lang.System.out;
@@ -31,8 +31,12 @@ public class Passerby extends Thread {
     
     @Override
     public void run() {
-        if (!randomWalking(startPositions[0].y, startPositions[0].x, markedPositionsPasserBy)) {
-            out.println("No solution!");
+        while(true)
+        {
+            if (!randomWalking(startPositions[0].y, startPositions[0].x, markedPositionsPasserBy, passerbyColor)) {
+                markedPositionsPasserBy.clear();
+            }
+            
         }
     }
     

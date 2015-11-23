@@ -5,7 +5,7 @@
  */
 package threads;
 
-import static catchthief.Maze.searchPath;
+import static catchthief.CityMap.searchPath;
 import java.awt.Color;
 import java.awt.Point;
 import static java.lang.System.out;
@@ -33,4 +33,5 @@ public class Thief extends Thread {
             out.println("No solution!");
         }
     }
+    
 }

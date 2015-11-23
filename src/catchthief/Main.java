@@ -60,7 +60,7 @@ public class Main {
             new CircleGelem(Color.green, 60)
         };
         
-        Maze maze = new Maze(pause, mapa, extraSymbols, gelems);
+        CityMap maze = new CityMap(pause, mapa, extraSymbols, gelems);
         
         Point[] thiefHidingPlacePositions = maze.getMaze().roadSymbolPositions(hindingPlaceSymbol);
         if (thiefHidingPlacePositions.length != 1) {
@@ -69,19 +69,53 @@ public class Main {
         }
         
         Map markedPositionsThief = new TreeMap<>();
-        Color thiefColor = Color.red;
+        Color thiefColor = Color.black;
         Thief thief = new Thief(thiefHidingPlacePositions, markedPositionsThief, thiefColor);
         
         thief.start();
         
-//        Point[] PasserbyHousePositions = maze.getMaze().roadSymbolPositions(passerbyHouseSymbol);
-//        if (PasserbyHousePositions.length != 1) {
-//            err.println("ERROR: one, and only one, start point required!");
-//            exit(2);
-//        }
+        Point[] PasserbyHousePositions = maze.getMaze().roadSymbolPositions(passerbyHouseSymbol);
+        if (PasserbyHousePositions.length != 1) {
+            err.println("ERROR: one, and only one, start point required!");
+            exit(2);
+        }
+
+//        Color passerbyColor = Color.green;
+//        Map markedPositionsPasserBy = new TreeMap<>();
+//        Passerby passerby = new Passerby(PasserbyHousePositions, markedPositionsPasserBy, passerbyColor);
+//        passerby.start();
 //
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
+//        Color passerbyColor2 = Color.yellow;
+//        Map markedPositionsPasserBy2 = new TreeMap<>();
+//        Passerby passerby2 = new Passerby(PasserbyHousePositions, markedPositionsPasserBy2, passerbyColor2);
+//        passerby2.start();
+//
+//        try {
+//            Thread.sleep(9000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
+//        Color passerbyColor3 = Color.magenta;
+//        Map markedPositionsPasserBy3 = new TreeMap<>();
+//        Passerby passerby3 = new Passerby(PasserbyHousePositions, markedPositionsPasserBy3, passerbyColor3);
+//        passerby3.start();
+//
+//        try {
+//            Thread.sleep(7000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
+        
 //        Color passerbyColor = Color.blue;
-//        for(int i = 0 ; i < 2 ; i++)
+//        for(int i = 0 ; i < 3 ; i++)
 //        {
 //            Map markedPositionsPasserBy = new TreeMap<>();
 //            Passerby passerby = new Passerby(PasserbyHousePositions, markedPositionsPasserBy, passerbyColor);

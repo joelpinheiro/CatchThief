@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import pt.ua.gboard.CircleGelem;
 import pt.ua.gboard.GBoard;
 import pt.ua.gboard.Gelem;
-import pt.ua.gboard.StringGelem;
 import pt.ua.gboard.games.Labyrinth;
 import pt.ua.gboard.games.LabyrinthGelem;
 import threads.Passerby;
@@ -32,7 +31,7 @@ import threads.Passerby;
  *
  * @author joelpinheiro
  */
-public class Maze {
+public class CityMap {
 
     static public int pause = 100; // waiting time in each step [ms]
     public String mapa;
@@ -49,7 +48,7 @@ public class Maze {
     static private String[] gpsMap;
     static char[] extraSymbols;
 
-    public Maze(int pause, String mapa, char[] extraSymbols, Gelem[] gelems) {
+    public CityMap(int pause, String mapa, char[] extraSymbols, Gelem[] gelems) {
         this.pause = pause;
         this.mapa = mapa;
         this.extraSymbols = extraSymbols;
@@ -81,30 +80,30 @@ public class Maze {
         return maze;
     }
     
-    public static boolean randomWalking(int lin, int col, Map markedPositions) {
+    public static boolean randomWalking(int lin, int col, Map markedPositions, Color color) {
         
         boolean result = false;
 
         if (maze.validPosition(lin, col) && maze.isRoad(lin, col) && !markedPositions.containsKey(String.valueOf(lin) + "_" + String.valueOf(col))) {
             
-            markPosition(lin, col);
+            markPosition(lin, col, color);
             markedPositions.put(String.valueOf(lin) + "_" + String.valueOf(col), markedPositions.size());
             unmarkPosition(lin, col, null);
 
-            if (randomWalking(lin - 1, col, markedPositions)) // North
+            if (randomWalking(lin - 1, col, markedPositions, color)) // North
                 {
                     result = true;
-                } else if (randomWalking(lin, col + 1, markedPositions)) // East
+                } else if (randomWalking(lin, col + 1, markedPositions, color)) // East
                 {
                     result = true;
-                } else if (randomWalking(lin, col - 1, markedPositions)) // West
+                } else if (randomWalking(lin, col - 1, markedPositions, color)) // West
                 {
                     result = true;
-                } else if (randomWalking(lin + 1, col, markedPositions)) // South
+                } else if (randomWalking(lin + 1, col, markedPositions, color)) // South
                 {
                     result = true;
                 } else {
-                    markPosition(lin, col);
+                    markPosition(lin, col, color);
                     markedPositions.put(String.valueOf(lin) + "_" + String.valueOf(col), markedPositions.size());
                     unmarkPosition(lin, col, null);
                 }
@@ -114,7 +113,7 @@ public class Maze {
         return result;
     }
 
-    public static boolean goToPosition(Map positions)
+    public static boolean goToPosition(Map positions, Color color)
     {
         Collection c = positions.keySet();
         Iterator itr = c.iterator();
@@ -137,21 +136,23 @@ public class Maze {
             String se = tmp[i];
             int x = se.indexOf('_');
             // get line and col from positions
-            moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())));
+            moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())), color);
         }
         return true;
     }
     
-    public static boolean moveToPosition(int lin, int col){
+    public static boolean moveToPosition(int lin, int col, Color color){
         boolean result = false;
         
-        markPosition(lin, col);
+        markPosition(lin, col, color);
         
         GBoard.sleep(pause);
         
         if (!isStartPosition(lin, col)) {
-            maze.putRoadSymbol(lin, col, ' ');
+            maze.board.draw(new CircleGelem(color, 60), lin, col, 1);
         }
+        
+        unmarkPosition(lin, col, null);
         
         return result;
     }
@@ -160,25 +161,27 @@ public class Maze {
      * Backtracking path search algorithm
      */
     public static boolean searchPath(int distance, int lin, int col, Map markedPositions, Color color) {
+       
         
-        //setMazeColor(color);
         
         boolean result = false;
 
         if (maze.validPosition(lin, col) && maze.isRoad(lin, col)) {
             if (maze.roadSymbol(lin, col) == objectToStealSymbol) {
+                
+                unmarkPosition(lin, col, markedPositions);
+                
                 out.println("Destination found at " + distance + " steps from start position.");
                 out.println();
                 result = true;
-
-                goToPosition(markedPositions);
+                
+                goToPosition(markedPositions, Color.gray);
+                
                 
                 System.out.println(entriesSortedByValues(markedPositions));
-       
-                
 
             } else if (freePosition(lin, col, markedPositions)) {
-                markPosition(lin, col);
+                markPosition(lin, col, color);
 
                 markedPositions.put(String.valueOf(lin) + "_" + String.valueOf(col), markedPositions.size());
                 unmarkPosition(lin, col, markedPositions);
@@ -196,7 +199,7 @@ public class Maze {
                 {
                     result = true;
                 } else {
-                    markPosition(lin, col);
+                    markPosition(lin, col, color);
                     markedPositions.put(String.valueOf(lin) + "_" + String.valueOf(col), markedPositions.size());
                     unmarkPosition(lin, col, markedPositions);
                 }
@@ -206,6 +209,9 @@ public class Maze {
 
             }
         }
+        
+        
+        
         return result;
     }
 
@@ -227,14 +233,17 @@ public class Maze {
                 || maze.roadSymbol(lin, col) == hindingPlaceSymbol;
     }
 
-    static void markPosition(int lin, int col) {
+    static void markPosition(int lin, int col, Color color) {
         assert maze.isRoad(lin, col);
 
         if (!isStartPosition(lin, col)) //maze.putRoadSymbol(lin, col, markedStartSymbol);
         //      else
         {
-            maze.putRoadSymbol(lin, col, actualPositionSymbol);
+            //maze
+//            maze.putRoadSymbol(lin, col, new CircleGelem(color, 60));
+            maze.board.draw(new CircleGelem(color, 60), lin, col, 1);
         }
+        
         GBoard.sleep(pause);
     }
 
@@ -246,7 +255,8 @@ public class Maze {
         if (isStartPosition(lin, col)) {
             maze.putRoadSymbol(lin, col, hindingPlaceSymbol);
         } else {
-            maze.putRoadSymbol(lin, col, ' ');
+            //maze.putRoadSymbol(lin, col, ' ');
+            maze.board.erase(lin, col, 1, 1);
         }
         GBoard.sleep(pause);
     }
@@ -256,11 +266,12 @@ public class Maze {
 
         //markedPositions.remove(String.valueOf(lin) + "_" + String.valueOf(col));
         if (!isStartPosition(lin, col)) {
-            maze.putRoadSymbol(lin, col, ' ');
+            //maze.putRoadSymbol(lin, col, ' ');
+            maze.board.erase(lin, col, 1, 1);
         }
         GBoard.sleep(pause);
     }
-
+    
     static <K, V extends Comparable<? super V>>
             SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map) {
         SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<Map.Entry<K, V>>(
