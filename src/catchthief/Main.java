@@ -5,6 +5,7 @@
  */
 package catchthief;
 
+import gps.GPSMonitor;
 import java.awt.Color;
 import java.awt.Point;
 import static java.lang.System.err;
@@ -17,6 +18,7 @@ import threads.Passerby;
 import pt.ua.gboard.CircleGelem;
 import pt.ua.gboard.Gelem;
 import pt.ua.gboard.StringGelem;
+import threads.Cop;
 import threads.Thief;
 
 /**
@@ -32,7 +34,6 @@ public class Main {
         
         int pause = 100;                // waiting time in each step [ms]
         char prisonSymbol = 'P';         // prisonSymbol
-        char prisonStartSymbol = 'p';
         char hindingPlaceSymbol = 'H'; 
         char passerbyHouseSymbol = 'T';
         char objectToStealSymbol = '*';
@@ -42,7 +43,6 @@ public class Main {
         char[] extraSymbols
                 = {
                     prisonSymbol,
-                    prisonStartSymbol,
                     hindingPlaceSymbol,
                     passerbyHouseSymbol,
                     objectToStealSymbol,
@@ -51,7 +51,6 @@ public class Main {
         
         Gelem[] gelems = {
             new StringGelem("" + prisonSymbol, Color.blue),
-            new StringGelem("" + prisonStartSymbol, Color.blue),
             new StringGelem("" + hindingPlaceSymbol, Color.red),
             new StringGelem("" + passerbyHouseSymbol, Color.gray),
             new StringGelem("" + objectToStealSymbol, Color.red),
@@ -60,36 +59,74 @@ public class Main {
             new CircleGelem(Color.green, 60)
         };
         
-        CityMap maze = new CityMap(pause, mapa, extraSymbols, gelems);
+        CityMap cityMap = new CityMap(pause, mapa, extraSymbols, gelems);
         
-        Point[] thiefHidingPlacePositions = maze.getMaze().roadSymbolPositions(hindingPlaceSymbol);
+        Point[] thiefHidingPlacePositions = cityMap.getMaze().roadSymbolPositions(hindingPlaceSymbol);
         if (thiefHidingPlacePositions.length != 1) {
             err.println("ERROR: one, and only one, start point required!");
             exit(2);
         }
         
+        Point[] end = cityMap.getMaze().roadSymbolPositions(hindingPlaceSymbol);
+        if (thiefHidingPlacePositions.length != 1) {
+            err.println("ERROR: one, and only one, start point required!");
+            exit(2);
+        }
+        
+        Point[] begin = cityMap.getMaze().roadSymbolPositions(prisonSymbol);
+        if (thiefHidingPlacePositions.length != 1) {
+            err.println("ERROR: one, and only one, start point required!");
+            exit(2);
+        }
+
+        Map gpsPositions = new TreeMap<>();
+        GPSMonitor gpsMonitor = new GPSMonitor(cityMap.getMaze(), extraSymbols);        
+        gpsPositions = gpsMonitor.getGPSPositions(begin[0], end[0]);
+        
+        System.out.println(gpsPositions.toString());
+        
         Map markedPositionsThief = new TreeMap<>();
-        Color thiefColor = Color.black;
-        Thief thief = new Thief(thiefHidingPlacePositions, markedPositionsThief, thiefColor);
+        Color thiefColor = Color.red;
+        Thief thief = new Thief(cityMap.getMaze(), thiefHidingPlacePositions, markedPositionsThief, extraSymbols, thiefColor);
         
         thief.start();
         
-        Point[] PasserbyHousePositions = maze.getMaze().roadSymbolPositions(passerbyHouseSymbol);
+//        Start PasserBy
+        Point[] PasserbyHousePositions = cityMap.getMaze().roadSymbolPositions(passerbyHouseSymbol);
         if (PasserbyHousePositions.length != 1) {
             err.println("ERROR: one, and only one, start point required!");
             exit(2);
         }
 
-//        Color passerbyColor = Color.green;
-//        Map markedPositionsPasserBy = new TreeMap<>();
-//        Passerby passerby = new Passerby(PasserbyHousePositions, markedPositionsPasserBy, passerbyColor);
-//        passerby.start();
-//
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        Color passerbyColor = Color.green;
+        Map markedPositionsPasserBy = new TreeMap<>();
+        Passerby passerby = new Passerby(cityMap.getMaze(), PasserbyHousePositions, markedPositionsPasserBy, extraSymbols, passerbyColor);
+        passerby.start();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+//        Cop
+        Point[] PrisonPositions = cityMap.getMaze().roadSymbolPositions(prisonSymbol);
+        if (PrisonPositions.length != 1) {
+            err.println("ERROR: one, and only one, start point required!");
+            exit(2);
+        }
+
+        Color copColor = Color.blue;
+        Map markedPositionsCop = new TreeMap<>();
+        Cop cop = new Cop(cityMap.getMaze(), PrisonPositions, markedPositionsCop, extraSymbols, copColor);
+        cop.start();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
 //        
 //        Color passerbyColor2 = Color.yellow;
 //        Map markedPositionsPasserBy2 = new TreeMap<>();
