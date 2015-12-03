@@ -100,7 +100,7 @@ public class Labyrinth
       Labyrinth.windowName = windowName;
    }
 
-   protected static String windowName = "Labyrinth"; // default value
+   protected static String windowName = "Catch The Thief Simulator"; // default value
 
    /**
     * Creates a labyrinth from a file.

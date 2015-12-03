@@ -21,15 +21,16 @@ public class CityMap {
     static public int pause = 100; // waiting time in each step [ms]
     public String mapa;
 
-    static Labyrinth maze = null;
+    public static Labyrinth maze = null;
 
-    static char prisonSymbol;         // prisonSymbol
+    static char prisonSymbol;
     static char hindingPlaceSymbol; 
     static char passerbyHouseSymbol;
     static char objectToStealSymbol;
     static char actualPositionSymbol;
     
     static char[] extraSymbols;
+   
 
     public CityMap(int pause, String mapa, char[] extraSymbols, Gelem[] gelems) {
         this.mapa = mapa;
@@ -48,16 +49,13 @@ public class CityMap {
         for (int i = 0; i < extraSymbols.length; i++) {
             maze.attachGelemToRoadSymbol(extraSymbols[i], gelems[i]);
         }
-
-        Point[] endPositions = maze.roadSymbolPositions(passerbyHouseSymbol);
-        if (endPositions.length != 1) {
-            err.println("ERROR: one, and only one, end point required!");
-            exit(3);
-        }
-        
     }
 
     public static Labyrinth getMaze() {
         return maze;
+    }
+
+    public static char[] getExtraSymbols(){
+        return extraSymbols;
     }
 }

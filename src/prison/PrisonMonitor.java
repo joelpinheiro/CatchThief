@@ -5,10 +5,13 @@
  */
 package prison;
 
+import java.awt.Point;
+
 /**
  *
  * @author joelpinheiro
  */
 public class PrisonMonitor {
     
+
 }

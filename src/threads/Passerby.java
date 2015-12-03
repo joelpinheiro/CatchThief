@@ -5,6 +5,8 @@
  */
 package threads;
 
+import catchthief.CityMap;
+import informationCentral.InformationCentralMonitor;
 import java.awt.Color;
 import java.awt.Point;
 import static java.lang.System.out;
@@ -14,8 +16,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import pt.ua.gboard.CircleGelem;
 import pt.ua.gboard.GBoard;
+import pt.ua.gboard.ImageGelem;
 import pt.ua.gboard.games.Labyrinth;
 
 /**
@@ -24,28 +26,30 @@ import pt.ua.gboard.games.Labyrinth;
  */
 public class Passerby extends Thread {
 
-    static public int pause = 100; // waiting time in each step [ms]
+    static public int pause = 100;
     private final Point[] startPositions;
     private final Map markedPositionsPasserBy;
     private final Color passerbyColor;
     private static Labyrinth maze;
-    static char prisonSymbol;         // prisonSymbol
+    static char prisonSymbol;
     static char hindingPlaceSymbol; 
     static char passerbyHouseSymbol;
     static char objectToStealSymbol;
     static char actualPositionSymbol;
+    static InformationCentralMonitor informationCentralMonitor;
     
-    public Passerby(Labyrinth maze, Point[] startPositions, Map markedPositionsPasserBy, char[] extraSymbols, Color passerbyColor) {
+    public Passerby(InformationCentralMonitor informationCentralMonitor, Point[] startPositions, Map markedPositionsPasserBy, char[] extraSymbols, Color passerbyColor) {
         this.startPositions = startPositions;
         this.markedPositionsPasserBy = markedPositionsPasserBy;
         this.passerbyColor = passerbyColor;
-        Passerby.maze = maze;
+        Passerby.maze = CityMap.getMaze();
         
         prisonSymbol = extraSymbols[0];
         hindingPlaceSymbol = extraSymbols[1];
         passerbyHouseSymbol = extraSymbols[2];
         objectToStealSymbol = extraSymbols[3];
         actualPositionSymbol = extraSymbols[4];
+        Passerby.informationCentralMonitor = informationCentralMonitor;
     }
     
     @Override
@@ -55,7 +59,6 @@ public class Passerby extends Thread {
             if (!randomWalking(startPositions[0].y, startPositions[0].x, markedPositionsPasserBy, passerbyColor)) {
                 markedPositionsPasserBy.clear();
             }
-            
         }
     }
     
@@ -96,9 +99,6 @@ public class Passerby extends Thread {
         Collection c = positions.keySet();
         Iterator itr = c.iterator();
 
-        String[] ses = new String[positions.size()];
-        int cont = positions.size() - 1;
-
         String[] tmp = new String[positions.size()];
 
         while (itr.hasNext()) {
@@ -123,8 +123,11 @@ public class Passerby extends Thread {
 
         GBoard.sleep(pause);
 
-        if (!isStartPosition(lin, col)) {
-            maze.board.draw(new CircleGelem(color, 60), lin, col, 1);
+        if (!isSymbolPosition(lin, col)) {
+            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/passerby.png", maze.board, 100), lin, col, 1);
+ 
+            if(informationCentralMonitor.passerByFoundThief(lin, col))
+                System.err.println("PasserBy found a Thief");
         }
 
         unmarkPosition(lin, col, null);
@@ -184,18 +187,26 @@ public class Passerby extends Thread {
 
                 GBoard.sleep(1);
                 clearPosition(lin, col, markedPositions);
-
             }
         }
 
         return result;
     }
-
-    static boolean isStartPosition(int lin, int col) {
+    
+    static boolean isObjectPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
-        return maze.roadSymbol(lin, col) == hindingPlaceSymbol
-                || maze.roadSymbol(lin, col) == hindingPlaceSymbol;
+        return maze.roadSymbol(lin, col) == objectToStealSymbol
+                || maze.roadSymbol(lin, col) == objectToStealSymbol;
+    }
+    
+    static boolean isSymbolPosition(int lin, int col) {
+        assert maze.isRoad(lin, col);
+
+        return maze.roadSymbol(lin, col) == objectToStealSymbol ||
+               maze.roadSymbol(lin, col) == hindingPlaceSymbol || 
+               maze.roadSymbol(lin, col) == prisonSymbol ||
+               maze.roadSymbol(lin, col) == passerbyHouseSymbol;
     }
 
     static boolean freePosition(int lin, int col, Map markedPositions) {
@@ -206,18 +217,18 @@ public class Passerby extends Thread {
         }
 
         return maze.roadSymbol(lin, col) == ' '
-                || maze.roadSymbol(lin, col) == hindingPlaceSymbol;
+                || isSymbolPosition(lin, col);
     }
 
     static void markPosition(int lin, int col, Color color) {
         assert maze.isRoad(lin, col);
 
-        if (!isStartPosition(lin, col)) //maze.putRoadSymbol(lin, col, markedStartSymbol);
-        //      else
+        if (!isSymbolPosition(lin, col))
         {
-            //cityMap
-//            maze.putRoadSymbol(lin, col, new CircleGelem(color, 60));
-            maze.board.draw(new CircleGelem(color, 60), lin, col, 1);
+            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/passerby.png", maze.board, 100), lin, col, 1);
+ 
+            if(informationCentralMonitor.passerByFoundThief(lin, col))
+                System.err.println("PasserBy found Thief!");
         }
 
         GBoard.sleep(pause);
@@ -228,10 +239,9 @@ public class Passerby extends Thread {
 
         markedPositions.remove(String.valueOf(lin) + "_" + String.valueOf(col));
 
-        if (isStartPosition(lin, col)) {
+        if (isSymbolPosition(lin, col)) {
             maze.putRoadSymbol(lin, col, hindingPlaceSymbol);
         } else {
-            //maze.putRoadSymbol(lin, col, ' ');
             maze.board.erase(lin, col, 1, 1);
         }
         GBoard.sleep(pause);
@@ -240,9 +250,7 @@ public class Passerby extends Thread {
     static void unmarkPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
-        //markedPositions.remove(String.valueOf(lin) + "_" + String.valueOf(col));
-        if (!isStartPosition(lin, col)) {
-            //maze.putRoadSymbol(lin, col, ' ');
+        if (!isSymbolPosition(lin, col)) {
             maze.board.erase(lin, col, 1, 1);
         }
         GBoard.sleep(pause);

@@ -6,6 +6,8 @@
 package threads;
 
 import catchthief.CityMap;
+import gps.GPSMonitor;
+import informationCentral.InformationCentralMonitor;
 import java.awt.Color;
 import java.awt.Point;
 import static java.lang.System.out;
@@ -14,9 +16,10 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
-import pt.ua.gboard.CircleGelem;
 import pt.ua.gboard.GBoard;
+import pt.ua.gboard.ImageGelem;
 import pt.ua.gboard.games.Labyrinth;
 
 /**
@@ -25,39 +28,42 @@ import pt.ua.gboard.games.Labyrinth;
  */
 public class Thief extends Thread {
 
-    static public int pause = 100; // waiting time in each step [ms]
+    static public int pause = 50;
     private Point[] startPositions;
     private Map markedPositions;
     private Color color;
     private static Labyrinth maze;
-    static char prisonSymbol;         // prisonSymbol
+    static char prisonSymbol;
     static char prisonStartSymbol;
     static char hindingPlaceSymbol;
     static char passerbyHouseSymbol;
     static char objectToStealSymbol;
     static char actualPositionSymbol;
+    static InformationCentralMonitor informationCentralMonitor;
 
-    public Thief(Labyrinth maze, Point[] startPositions, Map markedPositions, char[] extraSymbols, Color color) {
+    public Thief(InformationCentralMonitor informationCentralMonitor, Point[] startPositions, Map markedPositions, char[] extraSymbols, Color color) {
         this.startPositions = startPositions;
         this.markedPositions = markedPositions;
         this.color = color;
-        this.maze = maze;
+        this.maze = CityMap.getMaze();
 
         prisonSymbol = extraSymbols[0];
         hindingPlaceSymbol = extraSymbols[1];
         passerbyHouseSymbol = extraSymbols[2];
         objectToStealSymbol = extraSymbols[3];
         actualPositionSymbol = extraSymbols[4];
+        this.informationCentralMonitor = informationCentralMonitor;
     }
 
     @Override
     public void run() {
         if (!searchPath(0, startPositions[0].y, startPositions[0].x, markedPositions, color)) {
-            out.println("No solution!");
+            out.println("Thief stopped!");
         }
     }
 
     public static boolean randomWalking(int lin, int col, Map markedPositions, Color color) {
+
 
         boolean result = false;
 
@@ -89,6 +95,31 @@ public class Thief extends Thread {
         }
         return result;
     }
+    
+    public static boolean goToPrison(Map positions, Color color) {
+        Collection c = positions.keySet();
+        Iterator itr = c.iterator();
+
+        String[] ses = new String[positions.size()];
+        int cont = positions.size() - 1;
+
+        String[] tmp = new String[positions.size()];
+
+        while (itr.hasNext()) {
+            String g = (String) itr.next();
+            int id = (int) positions.get(g);
+            tmp[id] = g;
+        }
+
+//        for (int i = tmp.length - 1; i >= 0; i--) {
+        for(int i = 0 ; i < tmp.length ; i++) {
+            String se = tmp[i];
+            int x = se.indexOf('_'); 
+            // get line and col from positions
+            moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())), color);
+        }
+        return true;
+    }
 
     public static boolean goToPosition(Map positions, Color color) {
         Collection c = positions.keySet();
@@ -107,7 +138,7 @@ public class Thief extends Thread {
 
         for (int i = tmp.length - 1; i >= 0; i--) {
             String se = tmp[i];
-            int x = se.indexOf('_');
+            int x = se.indexOf('_'); 
             // get line and col from positions
             moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())), color);
         }
@@ -121,8 +152,9 @@ public class Thief extends Thread {
 
         GBoard.sleep(pause);
 
-        if (!isStartPosition(lin, col)) {
-            maze.board.draw(new CircleGelem(color, 60), lin, col, 1);
+        if (!isSymbolPosition(lin, col)) {
+            informationCentralMonitor.setActualThiefPosition(lin, col);
+            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/thief.png", maze.board, 100), lin, col, 1);
         }
 
         unmarkPosition(lin, col, null);
@@ -135,10 +167,36 @@ public class Thief extends Thread {
      */
     public static boolean searchPath(int distance, int lin, int col, Map markedPositions, Color color) {
 
+        if(informationCentralMonitor.thiefInPrison())
+            return false;
+        
+        if(informationCentralMonitor.copFoundThief()){
+                
+            Point begin = new Point(lin, col);
+
+            Point[] endPosition = maze.roadSymbolPositions(prisonSymbol);
+
+            Map gpsPositions = new TreeMap<>();
+            GPSMonitor gpsMonitor = new GPSMonitor(maze, CityMap.getExtraSymbols());        
+            gpsPositions = GPSMonitor.getGPSPositions(endPosition[0], begin);
+
+            goToPrison(gpsPositions, Color.BLACK);  
+            
+            informationCentralMonitor.setThiefInPrison(true);
+            
+            out.println("Thief arrived prison");
+            
+            return false;
+        }
+        
+        
+        
         boolean result = false;
 
         if (maze.validPosition(lin, col) && maze.isRoad(lin, col)) {
             if (maze.roadSymbol(lin, col) == objectToStealSymbol) {
+                
+                maze.board.erase(lin, col, 1, 1);
 
                 unmarkPosition(lin, col, markedPositions);
 
@@ -149,6 +207,7 @@ public class Thief extends Thread {
                 goToPosition(markedPositions, Color.black);
 
                 System.out.println(entriesSortedByValues(markedPositions));
+                
 
             } else if (freePosition(lin, col, markedPositions)) {
                 markPosition(lin, col, color);
@@ -169,6 +228,8 @@ public class Thief extends Thread {
                 {
                     result = true;
                 } else {
+                    if(informationCentralMonitor.thiefInPrison())
+                        return false;
                     markPosition(lin, col, color);
                     markedPositions.put(String.valueOf(lin) + "_" + String.valueOf(col), markedPositions.size());
                     unmarkPosition(lin, col, markedPositions);
@@ -176,20 +237,27 @@ public class Thief extends Thread {
 
                 GBoard.sleep(1);
                 clearPosition(lin, col, markedPositions);
-
             }
         }
 
         return result;
     }
-
-    static boolean isStartPosition(int lin, int col) {
+    
+    static boolean isSymbolPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
-        return maze.roadSymbol(lin, col) == hindingPlaceSymbol
-                || maze.roadSymbol(lin, col) == hindingPlaceSymbol;
+        return maze.roadSymbol(lin, col) == objectToStealSymbol ||
+               maze.roadSymbol(lin, col) == hindingPlaceSymbol || 
+               maze.roadSymbol(lin, col) == prisonSymbol ||
+               maze.roadSymbol(lin, col) == passerbyHouseSymbol;
     }
 
+    static boolean isObjectToStealPosition(int lin, int col) {
+        assert maze.isRoad(lin, col);
+
+        return maze.roadSymbol(lin, col) == objectToStealSymbol;
+    }
+    
     static boolean freePosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -198,18 +266,16 @@ public class Thief extends Thread {
         }
 
         return maze.roadSymbol(lin, col) == ' '
-                || maze.roadSymbol(lin, col) == hindingPlaceSymbol;
+                || isSymbolPosition(lin, col);
     }
 
     static void markPosition(int lin, int col, Color color) {
         assert maze.isRoad(lin, col);
 
-        if (!isStartPosition(lin, col)) //maze.putRoadSymbol(lin, col, markedStartSymbol);
-        //      else
+        if (!isSymbolPosition(lin, col)) //maze.putRoadSymbol(lin, col, markedStartSymbol);
         {
-            //cityMap
-//            maze.putRoadSymbol(lin, col, new CircleGelem(color, 60));
-            maze.board.draw(new CircleGelem(color, 60), lin, col, 1);
+            informationCentralMonitor.setActualThiefPosition(lin, col);
+            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/thief.png", maze.board, 100), lin, col, 1);       
         }
 
         GBoard.sleep(pause);
@@ -220,10 +286,7 @@ public class Thief extends Thread {
 
         markedPositions.remove(String.valueOf(lin) + "_" + String.valueOf(col));
 
-        if (isStartPosition(lin, col)) {
-            maze.putRoadSymbol(lin, col, hindingPlaceSymbol);
-        } else {
-            //maze.putRoadSymbol(lin, col, ' ');
+        if (!isSymbolPosition(lin, col) || isObjectToStealPosition(lin, col)) {
             maze.board.erase(lin, col, 1, 1);
         }
         GBoard.sleep(pause);
@@ -232,9 +295,7 @@ public class Thief extends Thread {
     static void unmarkPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
-        //markedPositions.remove(String.valueOf(lin) + "_" + String.valueOf(col));
-        if (!isStartPosition(lin, col)) {
-            //maze.putRoadSymbol(lin, col, ' ');
+        if (!isSymbolPosition(lin, col)) {
             maze.board.erase(lin, col, 1, 1);
         }
         GBoard.sleep(pause);

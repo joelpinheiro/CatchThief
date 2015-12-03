@@ -72,8 +72,8 @@ public class LabyrinthGelem extends Gelem
    protected static boolean rounded = true;
    protected static boolean showRoadBoundaries = false; // default
    protected static Color roadColor = Color.white;
-   protected static Color wallColor = Color.blue;
-   protected static Color roadBoundariesColor = Color.yellow;
+   protected static Color wallColor = Color.BLACK;
+   protected static Color roadBoundariesColor = Color.WHITE;
 
    public static boolean validForm(int form)
    {
