@@ -26,7 +26,7 @@ import pt.ua.gboard.games.Labyrinth;
  */
 public class Passerby extends Thread {
 
-    static public int pause = 100;
+    static public int pause = 200;
     private final Point[] startPositions;
     private final Map markedPositionsPasserBy;
     private final Color passerbyColor;
@@ -244,7 +244,7 @@ public class Passerby extends Thread {
         } else {
             maze.board.erase(lin, col, 1, 1);
         }
-        GBoard.sleep(pause);
+        //GBoard.sleep(pause);
     }
 
     static void unmarkPosition(int lin, int col, Map markedPositions) {
@@ -253,7 +253,7 @@ public class Passerby extends Thread {
         if (!isSymbolPosition(lin, col)) {
             maze.board.erase(lin, col, 1, 1);
         }
-        GBoard.sleep(pause);
+        //GBoard.sleep(pause);
     }
 
     static <K, V extends Comparable<? super V>>

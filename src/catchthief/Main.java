@@ -32,7 +32,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static final int NUMBER_OF_COPS = 1;
-    public static final int NUMBER_OF_PASSERBIES = 1;
+    public static final int NUMBER_OF_PASSERBIES = 2;
     public static final int NUMBER_OF_THIEFS = 1;
     
     public static void main(String[] args) {
@@ -43,7 +43,7 @@ public class Main {
         char passerbyHouseSymbol = 'T';
         char objectToStealSymbol = '$';
         char actualPositionSymbol = '•';
-        String mapa = "/Users/joelpinheiro/Documents/GitHub/CatchThief/src/board/mapa7.txt";
+        String mapa = "/Users/joelpinheiro/Documents/GitHub/CatchThief/src/board/city_map_1.txt";
         
         char[] extraSymbols
                 = {
@@ -90,6 +90,9 @@ public class Main {
             Map markedPositionsPasserBy = new TreeMap<>();
             Passerby passerby = new Passerby(informationCentralMonitor, PasserbyHousePositions, markedPositionsPasserBy, extraSymbols, passerbyColor);
             passerby.start();
+            
+//            pt.ua.concurrent.
+            //java.util.concurrent.Executors.scheduleAtFixedRate(Runnable n, long initialDelay, long period, TimeUnit unit);
 
             try {
                 Thread.sleep(1000);
@@ -106,7 +109,7 @@ public class Main {
             thief.start();
             
             try {
-                Thread.sleep(3000);
+                Thread.sleep(5000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -118,11 +121,11 @@ public class Main {
             Cop cop = new Cop(informationCentralMonitor, PrisonPositions, markedPositionsCop, extraSymbols, copColor);
             cop.start();
             
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         }
     }
  

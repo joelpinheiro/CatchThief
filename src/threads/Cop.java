@@ -30,7 +30,7 @@ import static threads.Thief.informationCentralMonitor;
  */
 public class Cop extends Thread {
 
-    static public int pause = 50; // waiting time in each step [ms]
+    static public int pause = 100; // waiting time in each step [ms]
     private final Point[] startPositions;
     private final Map markedPositionsCop;
     private final Color copColor;
@@ -325,7 +325,7 @@ public class Cop extends Thread {
         } else {
             maze.board.erase(lin, col, 1, 1);
         }
-        GBoard.sleep(pause);
+        //GBoard.sleep(pause);
     }
 
     static void unmarkPosition(int lin, int col, Map markedPositions) {
@@ -334,7 +334,7 @@ public class Cop extends Thread {
         if (!isSymbolPosition(lin, col)) {
             maze.board.erase(lin, col, 1, 1);
         }
-        GBoard.sleep(pause);
+        //GBoard.sleep(pause);
     }
 
     static <K, V extends Comparable<? super V>>
