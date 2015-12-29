@@ -58,7 +58,6 @@ public class GPSMonitor {
      * @return 
      */
     public static Map getGPSPositions(Point endPoint, Point startPoint){
-        assert finalMarkedPositions != null;
         
         endPosition = endPoint;
         
