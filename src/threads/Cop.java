@@ -10,8 +10,6 @@ import gps.GPSMonitor;
 import informationCentral.InformationCentralMonitor;
 import java.awt.Color;
 import java.awt.Point;
-import static java.lang.System.err;
-import static java.lang.System.exit;
 import static java.lang.System.out;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,7 +20,6 @@ import java.util.TreeSet;
 import pt.ua.gboard.GBoard;
 import pt.ua.gboard.ImageGelem;
 import pt.ua.gboard.games.Labyrinth;
-import static threads.Thief.informationCentralMonitor;
 
 /**
  *
@@ -30,7 +27,7 @@ import static threads.Thief.informationCentralMonitor;
  */
 public class Cop extends Thread {
 
-    static public int pause = 50; // waiting time in each step [ms]
+    static public int pause = 100; // waiting time in each step [ms]
     private final Point[] startPositions;
     private final Map markedPositionsCop;
     private final Color copColor;
@@ -42,6 +39,14 @@ public class Cop extends Thread {
     static char actualPositionSymbol;
     static InformationCentralMonitor informationCentralMonitor;
 
+    /**
+     * 
+     * @param informationCentralMonitor
+     * @param startPositions
+     * @param markedPositionsCop
+     * @param extraSymbols
+     * @param copColor 
+     */
     public Cop(InformationCentralMonitor informationCentralMonitor, Point[] startPositions, Map markedPositionsCop, char[] extraSymbols, Color copColor) {
         this.startPositions = startPositions;
         this.markedPositionsCop = markedPositionsCop;
@@ -89,6 +94,14 @@ public class Cop extends Thread {
         }
     }
 
+    /**
+     * randomWalking
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @param color
+     * @return 
+     */
     public static boolean randomWalking(int lin, int col, Map markedPositions, Color color) {
 
         if(informationCentralMonitor.thiefInPrison())
@@ -145,6 +158,12 @@ public class Cop extends Thread {
         return result;
     }
 
+    /**
+     * goToPosition
+     * @param positions
+     * @param color
+     * @return 
+     */
     public static boolean goToPosition(Map positions, Color color) {
         Collection c = positions.keySet();
         Iterator itr = c.iterator();
@@ -162,14 +181,23 @@ public class Cop extends Thread {
 
         for (int i = tmp.length - 1; i >= 0; i--) {
             String se = tmp[i];
-            int x = se.indexOf('_');
+            int x;
+            if(se != null){
+                x = se.indexOf('_');
             // get line and col from positions
-            moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())), color);
+                moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())), color);
+            }
         }
         return true;
     }
     
-        public static boolean goToPrison(Map positions, Color color) {
+    /**
+     * goToPrison
+     * @param positions
+     * @param color
+     * @return 
+     */
+    public static boolean goToPrison(Map positions, Color color) {
         Collection c = positions.keySet();
         Iterator itr = c.iterator();
 
@@ -185,8 +213,7 @@ public class Cop extends Thread {
         }
 
 //        for (int i = tmp.length - 1; i >= 0; i--) {
-        for(int i = 0 ; i < tmp.length ; i++) {
-            String se = tmp[i];
+        for (String se : tmp) {
             int x = se.indexOf('_'); 
             // get line and col from positions
             moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())), color);
@@ -194,6 +221,13 @@ public class Cop extends Thread {
         return true;
     }
 
+    /**
+     * moveToPosition
+     * @param lin
+     * @param col
+     * @param color
+     * @return 
+     */
     public static boolean moveToPosition(int lin, int col, Color color) {
         boolean result = false;
 
@@ -272,6 +306,12 @@ public class Cop extends Thread {
         return result;
     }
     
+    /**
+     * isSymbolPosition
+     * @param lin
+     * @param col
+     * @return 
+     */
     static boolean isSymbolPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
@@ -281,6 +321,12 @@ public class Cop extends Thread {
                maze.roadSymbol(lin, col) == passerbyHouseSymbol;
     }
     
+    /**
+     * isObjectPosition
+     * @param lin
+     * @param col
+     * @return 
+     */
     static boolean isObjectPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
@@ -288,6 +334,13 @@ public class Cop extends Thread {
                 || maze.roadSymbol(lin, col) == objectToStealSymbol;
     }
 
+    /**
+     * freePosition
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @return 
+     */
     static boolean freePosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -299,6 +352,12 @@ public class Cop extends Thread {
                 || isSymbolPosition(lin, col);
     }
 
+    /**
+     * markPosition
+     * @param lin
+     * @param col
+     * @param color 
+     */
     static void markPosition(int lin, int col, Color color) {
         assert maze.isRoad(lin, col);
 
@@ -315,6 +374,12 @@ public class Cop extends Thread {
         GBoard.sleep(pause);
     }
 
+    /**
+     * clearPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void clearPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -325,18 +390,31 @@ public class Cop extends Thread {
         } else {
             maze.board.erase(lin, col, 1, 1);
         }
-        GBoard.sleep(pause);
+        //GBoard.sleep(pause);
     }
 
+    /**
+     * unmarkPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void unmarkPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
         if (!isSymbolPosition(lin, col)) {
             maze.board.erase(lin, col, 1, 1);
         }
-        GBoard.sleep(pause);
+        //GBoard.sleep(pause);
     }
 
+    /**
+     * 
+     * @param <K>
+     * @param <V>
+     * @param map
+     * @return 
+     */
     static <K, V extends Comparable<? super V>>
             SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map) {
         SortedSet<Map.Entry<K, V>> sortedEntries;

@@ -5,9 +5,6 @@
  */
 package catchthief;
 
-import java.awt.Point;
-import static java.lang.System.err;
-import static java.lang.System.exit;
 import pt.ua.gboard.Gelem;
 import pt.ua.gboard.games.Labyrinth;
 import pt.ua.gboard.games.LabyrinthGelem;
@@ -20,18 +17,21 @@ public class CityMap {
 
     static public int pause = 100; // waiting time in each step [ms]
     public String mapa;
-
     public static Labyrinth maze = null;
-
     static char prisonSymbol;
     static char hindingPlaceSymbol; 
     static char passerbyHouseSymbol;
     static char objectToStealSymbol;
     static char actualPositionSymbol;
-    
     static char[] extraSymbols;
    
-
+    /**
+     * Constructor of CityMap
+     * @param pause
+     * @param mapa
+     * @param extraSymbols
+     * @param gelems 
+     */
     public CityMap(int pause, String mapa, char[] extraSymbols, Gelem[] gelems) {
         this.mapa = mapa;
         CityMap.extraSymbols = extraSymbols;
@@ -51,11 +51,23 @@ public class CityMap {
         }
     }
 
+    /**
+     * Get the instance of the maze
+     * @return maze
+     */
     public static Labyrinth getMaze() {
+        assert maze != null;
+        
         return maze;
     }
 
+    /**
+     * get the symbols
+     * @return extraSymbols
+     */
     public static char[] getExtraSymbols(){
+        assert extraSymbols != null;
+        
         return extraSymbols;
     }
 }

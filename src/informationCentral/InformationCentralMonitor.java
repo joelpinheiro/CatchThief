@@ -21,25 +21,48 @@ public class InformationCentralMonitor {
     static boolean copFoundThief = false;
     static boolean thiefInPrison = false;
 
+    /**
+     * InformationCentralMonitor
+     */
     public InformationCentralMonitor() {
         this.actualThiefPosition = new Point();
         this.lastThiefPosition = new Point();
     }
     
+    /**
+     * setActualThiefPosition
+     * @param lin
+     * @param col 
+     */
     public synchronized void setActualThiefPosition(int lin, int col) {
         this.actualThiefPosition.x = lin;
         this.actualThiefPosition.y = col;
     }
     
+    /**
+     * getActualThiefPosition
+     * @return 
+     */
     public Point getActualThiefPosition() {
         return this.actualThiefPosition;
     }
     
+    /**
+     * getLastThiefPosition
+     * @return 
+     */
     public Point getLastThiefPosition() {
         return this.lastThiefPosition;
     }
     
+    /**
+     * passerByFoundThief
+     * @param lin
+     * @param col
+     * @return 
+     */
     public synchronized boolean passerByFoundThief(int lin, int col) {
+        
         if(actualThiefPosition == null)
             return false;
         
@@ -55,6 +78,12 @@ public class InformationCentralMonitor {
        
     }
     
+    /**
+     * CopFoundThief
+     * @param lin
+     * @param col
+     * @return 
+     */
     public boolean CopFoundThief(int lin, int col) {
         if(actualThiefPosition == null)
             return false;
@@ -66,6 +95,10 @@ public class InformationCentralMonitor {
         else return false;
     }
     
+    /**
+     * thereAreIncidents
+     * @return 
+     */
     public synchronized boolean thereAreIncidents() {
         
         while(true){
@@ -84,6 +117,10 @@ public class InformationCentralMonitor {
         return true;
     }
     
+    /**
+     * copFoundThief
+     * @return 
+     */
     public synchronized  boolean copFoundThief() {
         if(this.copFoundThief){
             return true;
@@ -92,10 +129,18 @@ public class InformationCentralMonitor {
             return false;
     }
     
+    /**
+     * setThiefInPrison
+     * @param b 
+     */
     public synchronized void setThiefInPrison(boolean b) {
         this.thiefInPrison = b;
     }
     
+    /**
+     * thiefInPrison
+     * @return 
+     */
     public synchronized boolean thiefInPrison() {
         return this.thiefInPrison;
     }
