@@ -5,12 +5,9 @@
  */
 package gps;
 
-import informationCentral.InformationCentralMonitor;
 import java.awt.Point;
 import static java.lang.System.out;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -18,7 +15,6 @@ import java.util.TreeSet;
 import java.awt.Color;
 import java.util.HashMap;
 import pt.ua.gboard.GBoard;
-import pt.ua.gboard.ImageGelem;
 import pt.ua.gboard.games.Labyrinth;
 
 /**
@@ -26,6 +22,7 @@ import pt.ua.gboard.games.Labyrinth;
  * @author joelpinheiro
  */
 public class GPSMonitor {
+    
     static public int pause = 0;
     private static Point endPosition;
     private static Map markedPositions;
@@ -38,7 +35,11 @@ public class GPSMonitor {
     static char objectToStealSymbol;
     static char actualPositionSymbol;
 
-
+    /**
+     * GPSMonitor Constructor
+     * @param maze
+     * @param extraSymbols 
+     */
     public GPSMonitor(Labyrinth maze, char[] extraSymbols) {
         GPSMonitor.markedPositions = new TreeMap<>();
         GPSMonitor.maze = maze;
@@ -50,7 +51,15 @@ public class GPSMonitor {
         actualPositionSymbol = extraSymbols[4];
     }
     
+    /**
+     * getGPSPositions
+     * @param endPoint
+     * @param startPoint
+     * @return 
+     */
     public static Map getGPSPositions(Point endPoint, Point startPoint){
+        assert finalMarkedPositions != null;
+        
         endPosition = endPoint;
         
         if (!searchPath(0, startPoint.x, startPoint.y, markedPositions, java.awt.Color.BLACK)) {
@@ -61,11 +70,17 @@ public class GPSMonitor {
     }
    
 
-   /**
+    /**
      * Backtracking path search algorithm
+     * @param distance
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @param color
+     * @return 
      */
     public static boolean searchPath(int distance, int lin, int col, Map markedPositions, Color color) {
-
+        
         boolean result = false;
 
         if (maze.validPosition(lin, col) && maze.isRoad(lin, col)) {
@@ -114,6 +129,12 @@ public class GPSMonitor {
         return result;
     }
     
+    /**
+     * isSymbolPosition
+     * @param lin
+     * @param col
+     * @return 
+     */
     static boolean isSymbolPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
@@ -123,6 +144,13 @@ public class GPSMonitor {
                maze.roadSymbol(lin, col) == passerbyHouseSymbol;
     }
 
+    /**
+     * freePosition
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @return 
+     */
     static boolean freePosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -134,17 +162,24 @@ public class GPSMonitor {
                 || isSymbolPosition(lin, col);
     }
 
+    /**
+     * markPosition
+     * @param lin
+     * @param col
+     * @param color 
+     */
     static void markPosition(int lin, int col, Color color) {
         assert maze.isRoad(lin, col);
-
-        if (!isSymbolPosition(lin, col)) //maze.putRoadSymbol(lin, col, markedStartSymbol);
-        {
-            //maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/thief.png", maze.board, 100), lin, col, 1);       
-        }
 
         GBoard.sleep(pause);
     }
 
+    /**
+     * clearPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void clearPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -159,6 +194,12 @@ public class GPSMonitor {
         GBoard.sleep(pause);
     }
 
+    /**
+     * unmarkPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void unmarkPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -170,6 +211,13 @@ public class GPSMonitor {
         GBoard.sleep(pause);
     }
 
+    /**
+     * 
+     * @param <K>
+     * @param <V>
+     * @param map
+     * @return 
+     */
     static <K, V extends Comparable<? super V>>
             SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map) {
         SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<Map.Entry<K, V>>(

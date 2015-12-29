@@ -38,6 +38,14 @@ public class Passerby extends Thread {
     static char actualPositionSymbol;
     static InformationCentralMonitor informationCentralMonitor;
     
+    /**
+     * Passerby
+     * @param informationCentralMonitor
+     * @param startPositions
+     * @param markedPositionsPasserBy
+     * @param extraSymbols
+     * @param passerbyColor 
+     */
     public Passerby(InformationCentralMonitor informationCentralMonitor, Point[] startPositions, Map markedPositionsPasserBy, char[] extraSymbols, Color passerbyColor) {
         this.startPositions = startPositions;
         this.markedPositionsPasserBy = markedPositionsPasserBy;
@@ -62,6 +70,14 @@ public class Passerby extends Thread {
         }
     }
     
+    /**
+     * randomWalking
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @param color
+     * @return 
+     */
     public static boolean randomWalking(int lin, int col, Map markedPositions, Color color) {
 
         boolean result = false;
@@ -95,6 +111,12 @@ public class Passerby extends Thread {
         return result;
     }
 
+    /**
+     * goToPosition
+     * @param positions
+     * @param color
+     * @return 
+     */
     public static boolean goToPosition(Map positions, Color color) {
         Collection c = positions.keySet();
         Iterator itr = c.iterator();
@@ -116,6 +138,13 @@ public class Passerby extends Thread {
         return true;
     }
 
+    /**
+     * moveToPosition
+     * @param lin
+     * @param col
+     * @param color
+     * @return 
+     */
     public static boolean moveToPosition(int lin, int col, Color color) {
         boolean result = false;
 
@@ -193,6 +222,12 @@ public class Passerby extends Thread {
         return result;
     }
     
+    /**
+     * isObjectPosition
+     * @param lin
+     * @param col
+     * @return 
+     */
     static boolean isObjectPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
@@ -200,6 +235,12 @@ public class Passerby extends Thread {
                 || maze.roadSymbol(lin, col) == objectToStealSymbol;
     }
     
+    /**
+     * isSymbolPosition
+     * @param lin
+     * @param col
+     * @return 
+     */
     static boolean isSymbolPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
@@ -209,6 +250,13 @@ public class Passerby extends Thread {
                maze.roadSymbol(lin, col) == passerbyHouseSymbol;
     }
 
+    /**
+     * freePosition
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @return 
+     */
     static boolean freePosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -220,6 +268,12 @@ public class Passerby extends Thread {
                 || isSymbolPosition(lin, col);
     }
 
+    /**
+     * markPosition
+     * @param lin
+     * @param col
+     * @param color 
+     */
     static void markPosition(int lin, int col, Color color) {
         assert maze.isRoad(lin, col);
 
@@ -234,6 +288,12 @@ public class Passerby extends Thread {
         GBoard.sleep(pause);
     }
 
+    /**
+     * clearPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void clearPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -247,6 +307,12 @@ public class Passerby extends Thread {
         //GBoard.sleep(pause);
     }
 
+    /**
+     * unmarkPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void unmarkPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -256,6 +322,13 @@ public class Passerby extends Thread {
         //GBoard.sleep(pause);
     }
 
+    /**
+     * unmarkPosition
+     * @param <K>
+     * @param <V>
+     * @param map
+     * @return 
+     */
     static <K, V extends Comparable<? super V>>
             SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map) {
         SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<>(

@@ -29,9 +29,9 @@ import pt.ua.gboard.games.Labyrinth;
 public class Thief extends Thread {
 
     static public int pause = 100;
-    private Point[] startPositions;
-    private Map markedPositions;
-    private Color color;
+    private final Point[] startPositions;
+    private final Map markedPositions;
+    private final Color color;
     private static Labyrinth maze;
     static char prisonSymbol;
     static char prisonStartSymbol;
@@ -41,11 +41,19 @@ public class Thief extends Thread {
     static char actualPositionSymbol;
     static InformationCentralMonitor informationCentralMonitor;
 
+    /**
+     * 
+     * @param informationCentralMonitor
+     * @param startPositions
+     * @param markedPositions
+     * @param extraSymbols
+     * @param color 
+     */
     public Thief(InformationCentralMonitor informationCentralMonitor, Point[] startPositions, Map markedPositions, char[] extraSymbols, Color color) {
         this.startPositions = startPositions;
         this.markedPositions = markedPositions;
         this.color = color;
-        this.maze = CityMap.getMaze();
+        Thief.maze = CityMap.getMaze();
 
         prisonSymbol = extraSymbols[0];
         hindingPlaceSymbol = extraSymbols[1];
@@ -62,6 +70,14 @@ public class Thief extends Thread {
         }
     }
 
+    /**
+     * randomWalking
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @param color
+     * @return 
+     */
     public static boolean randomWalking(int lin, int col, Map markedPositions, Color color) {
 
 
@@ -96,6 +112,12 @@ public class Thief extends Thread {
         return result;
     }
     
+    /**
+     * goToPrison
+     * @param positions
+     * @param color
+     * @return 
+     */
     public static boolean goToPrison(Map positions, Color color) {
         Collection c = positions.keySet();
         Iterator itr = c.iterator();
@@ -112,8 +134,7 @@ public class Thief extends Thread {
         }
 
 //        for (int i = tmp.length - 1; i >= 0; i--) {
-        for(int i = 0 ; i < tmp.length ; i++) {
-            String se = tmp[i];
+        for (String se : tmp) {
             int x = se.indexOf('_'); 
             // get line and col from positions
             moveToPosition(Integer.parseInt(se.substring(0, x)), Integer.parseInt(se.substring(x + 1, se.length())), color);
@@ -121,6 +142,12 @@ public class Thief extends Thread {
         return true;
     }
 
+    /**
+     * goToPosition
+     * @param positions
+     * @param color
+     * @return 
+     */
     public static boolean goToPosition(Map positions, Color color) {
         Collection c = positions.keySet();
         Iterator itr = c.iterator();
@@ -145,6 +172,13 @@ public class Thief extends Thread {
         return true;
     }
 
+    /**
+     * moveToPosition
+     * @param lin
+     * @param col
+     * @param color
+     * @return 
+     */
     public static boolean moveToPosition(int lin, int col, Color color) {
         boolean result = false;
 
@@ -243,6 +277,12 @@ public class Thief extends Thread {
         return result;
     }
     
+    /**
+     * isSymbolPosition
+     * @param lin
+     * @param col
+     * @return 
+     */
     static boolean isSymbolPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
@@ -252,12 +292,25 @@ public class Thief extends Thread {
                maze.roadSymbol(lin, col) == passerbyHouseSymbol;
     }
 
+    /**
+     * isObjectToStealPosition
+     * @param lin
+     * @param col
+     * @return 
+     */
     static boolean isObjectToStealPosition(int lin, int col) {
         assert maze.isRoad(lin, col);
 
         return maze.roadSymbol(lin, col) == objectToStealSymbol;
     }
     
+    /**
+     * freePosition
+     * @param lin
+     * @param col
+     * @param markedPositions
+     * @return 
+     */
     static boolean freePosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -269,6 +322,12 @@ public class Thief extends Thread {
                 || isSymbolPosition(lin, col);
     }
 
+    /**
+     * markPosition
+     * @param lin
+     * @param col
+     * @param color 
+     */
     static void markPosition(int lin, int col, Color color) {
         assert maze.isRoad(lin, col);
 
@@ -281,6 +340,12 @@ public class Thief extends Thread {
         GBoard.sleep(pause);
     }
 
+    /**
+     * clearPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void clearPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -292,6 +357,12 @@ public class Thief extends Thread {
         //GBoard.sleep(pause);
     }
 
+    /**
+     * unmarkPosition
+     * @param lin
+     * @param col
+     * @param markedPositions 
+     */
     static void unmarkPosition(int lin, int col, Map markedPositions) {
         assert maze.isRoad(lin, col);
 
@@ -301,6 +372,13 @@ public class Thief extends Thread {
         //GBoard.sleep(pause);
     }
 
+    /**
+     * 
+     * @param <K>
+     * @param <V>
+     * @param map
+     * @return 
+     */
     static <K, V extends Comparable<? super V>>
             SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map) {
         SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<Map.Entry<K, V>>(
