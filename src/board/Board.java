@@ -31,7 +31,7 @@ public class Board
          markedPositionSymbol,
          actualPositionSymbol
       };
-      maze = new Labyrinth("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/board/mapa4.txt", extraSymbols);
+      maze = new Labyrinth("./src/board/mapa4.txt", extraSymbols);
       Gelem[] gelems = {
          new StringGelem(""+startSymbol, Color.red),
          new StringGelem(""+markedStartSymbol, Color.red),

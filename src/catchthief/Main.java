@@ -42,7 +42,7 @@ public class Main {
         char passerbyHouseSymbol = 'T';
         char objectToStealSymbol = '$';
         char actualPositionSymbol = '•';
-        String mapa = "/Users/joelpinheiro/Documents/GitHub/CatchThief/src/board/labyrinth.txt";
+        String mapa = "./src/board/labyrinth.txt";
         
         char[] extraSymbols
                 = {

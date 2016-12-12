@@ -153,7 +153,7 @@ public class Passerby extends Thread {
         GBoard.sleep(pause);
 
         if (!isSymbolPosition(lin, col)) {
-            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/passerby.png", maze.board, 100), lin, col, 1);
+            maze.board.draw(new ImageGelem("./src/threads/passerby.png", maze.board, 100), lin, col, 1);
  
             if(informationCentralMonitor.passerByFoundThief(lin, col))
                 System.err.println("PasserBy found a Thief");
@@ -279,7 +279,7 @@ public class Passerby extends Thread {
 
         if (!isSymbolPosition(lin, col))
         {
-            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/passerby.png", maze.board, 100), lin, col, 1);
+            maze.board.draw(new ImageGelem("./src/threads/passerby.png", maze.board, 100), lin, col, 1);
  
             if(informationCentralMonitor.passerByFoundThief(lin, col))
                 System.err.println("PasserBy found Thief!");

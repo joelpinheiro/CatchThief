@@ -188,7 +188,7 @@ public class Thief extends Thread {
 
         if (!isSymbolPosition(lin, col)) {
             informationCentralMonitor.setActualThiefPosition(lin, col);
-            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/thief.png", maze.board, 100), lin, col, 1);
+            maze.board.draw(new ImageGelem("./src/threads/thief.png", maze.board, 100), lin, col, 1);
         }
 
         unmarkPosition(lin, col, null);
@@ -334,7 +334,7 @@ public class Thief extends Thread {
         if (!isSymbolPosition(lin, col)) //maze.putRoadSymbol(lin, col, markedStartSymbol);
         {
             informationCentralMonitor.setActualThiefPosition(lin, col);
-            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/thief.png", maze.board, 100), lin, col, 1);       
+            maze.board.draw(new ImageGelem("./src/threads/thief.png", maze.board, 100), lin, col, 1);       
         }
 
         GBoard.sleep(pause);

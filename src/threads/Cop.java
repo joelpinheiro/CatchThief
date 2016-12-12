@@ -236,7 +236,7 @@ public class Cop extends Thread {
         GBoard.sleep(pause);
 
         if (!isSymbolPosition(lin, col)) {
-            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/cop.png", maze.board, 100), lin, col, 1);
+            maze.board.draw(new ImageGelem("./src/threads/cop.png", maze.board, 100), lin, col, 1);
  
             if(informationCentralMonitor.CopFoundThief(lin, col))
                 System.err.println("Cop found Thief!");
@@ -363,7 +363,7 @@ public class Cop extends Thread {
 
         if (!isSymbolPosition(lin, col))
         {
-            maze.board.draw(new ImageGelem("/Users/joelpinheiro/Documents/GitHub/CatchThief/src/threads/cop.png", maze.board, 100), lin, col, 1);
+            maze.board.draw(new ImageGelem("./src/threads/cop.png", maze.board, 100), lin, col, 1);
             
             if(informationCentralMonitor.CopFoundThief(lin, col)) {
                 System.err.println("Cop found Thief!");
