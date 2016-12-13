@@ -1,5 +1,5 @@
-# Safebox
-Catch the Thief is a simulator that runs concurrently
+# Catch the Thief
+Catch the Thief is a simulator that runs concurrently.
 
 - [Report ](https://github.com/joelpinheiro/CatchThief/blob/master/Report_65151.pdf)
 - [Simulation Video](https://www.youtube.com/watch?v=bFvfBsKo904)
